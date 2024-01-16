@@ -1,95 +1,151 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+// node_modules
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+// logo
+import zeptoLogo from "@/public/zepto-logo.svg";
+
+// grocery icons
+import apple from "@/public/apple.png";
+import bananas from "@/public/bananas.png";
+import instantNoodles from "@/public/instant-noodles.png";
+import milk from "@/public/milk.png";
+import tomato from "@/public/tomato.png";
+import whiteBread from "@/public/white-bread.png";
+
+// close icon
+import closeIcon from "@/public/close.png";
+
+// css
+import styles from "./page.module.css";
+
+type groceryItem = {
+  icon: any;
+  name: string;
+};
+
+const groceryItems: groceryItem[] = [
+  {
+    icon: apple,
+    name: "apple",
+  },
+  {
+    icon: bananas,
+    name: "bananas",
+  },
+  {
+    icon: instantNoodles,
+    name: "instant noodles",
+  },
+  {
+    icon: milk,
+    name: "milk",
+  },
+  {
+    icon: tomato,
+    name: "tomato",
+  },
+  {
+    icon: whiteBread,
+    name: "white bread",
+  },
+];
 
 export default function Home() {
+  const [suggestions, setSuggestions] = useState<groceryItem[]>(groceryItems);
+  const [selectedItems, setSelectedItems] = useState<groceryItem[]>([]);
+  const [search, setSearch] = useState("");
+
+  const handleChange = (e: any) => {
+    setSearch(e.target.value);
+    let suggestions = groceryItems;
+    for (let item of selectedItems) {
+      suggestions = suggestions.filter((s) => s.name !== item.name);
+    }
+    if (e.target.value === "") {
+      setSuggestions(suggestions);
+      return;
+    }
+    const items = suggestions.filter(
+      (s) => !!s.name.startsWith(e.target.value)
+    );
+    setSuggestions(items);
+  };
+
+  const addItem = (item: groceryItem) => {
+    setSelectedItems((prev) => [...prev, item]);
+    setSearch("");
+  };
+
+  const removeItem = (item: groceryItem) => {
+    let items = selectedItems.filter((i) => i.name !== item.name);
+    setSelectedItems(items);
+  };
+
+  useEffect(() => {
+    let suggestions = groceryItems;
+    for (let item of selectedItems) {
+      suggestions = suggestions.filter((s) => s.name !== item.name);
+    }
+    setSuggestions(suggestions);
+  }, [selectedItems]);
+
+  const handleKeyDown = (e: any) => {
+    if (e.keyCode === 8) {
+      const items = selectedItems.slice(0, selectedItems.length - 1);
+      setSelectedItems(items);
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
+    <div className={styles.main}>
+      <Image
+        src={zeptoLogo}
+        alt="zepto-logo"
+        width={200}
+        height={200}
+        className={styles.zeptoLogo}
+      />
+      <div className={styles.searchContainer}>
+        {selectedItems.map((s, i) => (
+          <div key={i + "_selected"} className={styles.selectedItem}>
+            <Image src={s.icon} height={15} width={15} alt={s.name} />
+            <span>{s.name}</span>
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+              src={closeIcon}
+              height={10}
+              width={10}
+              alt="close"
+              className={styles.closeIcon}
+              onClick={() => removeItem(s)}
             />
-          </a>
+          </div>
+        ))}
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            className={styles.input}
+            placeholder="Search..."
+            onChange={handleChange}
+            value={search}
+            onKeyDown={handleKeyDown}
+          />
+          <div className={styles.suggestionsContainer}>
+            {suggestions.map((s, i) => (
+              <button
+                className={styles.suggestion}
+                key={i}
+                onClick={() => addItem(s)}
+              >
+                <Image src={s.icon} height={20} width={20} alt={s.name} />
+                <span>{s.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
