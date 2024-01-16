@@ -93,7 +93,7 @@ export default function Home() {
   }, [selectedItems]);
 
   const handleKeyDown = (e: any) => {
-    if (e.keyCode === 8) {
+    if (e.keyCode === 8 && search === '') {
       const items = selectedItems.slice(0, selectedItems.length - 1);
       setSelectedItems(items);
     }
