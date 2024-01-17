@@ -106,18 +106,18 @@ export default function Home() {
   }, [selectedItems]);
 
   const handleKeyDown = (e: any) => {
-    const itemToBeRemoved = selectedItems[selectedItems.length - 1];
-    if (itemToBeRemoved.highLighted) {
-      if (e.keyCode === 8 && search === "") {
+    if (e.keyCode === 8 && search === "") {
+      const itemToBeRemoved = selectedItems[selectedItems.length - 1];
+      if (itemToBeRemoved.highLighted) {
         const items = selectedItems.slice(0, selectedItems.length - 1);
         setSelectedItems(items);
+      } else {
+        itemToBeRemoved.highLighted = true;
+        setSelectedItems((prev) => [
+          ...prev.slice(0, selectedItems.length - 1),
+          itemToBeRemoved,
+        ]);
       }
-    } else if (e.keyCode === 8 && search === "") {
-      itemToBeRemoved.highLighted = true;
-      setSelectedItems((prev) => [
-        ...prev.slice(0, selectedItems.length - 1),
-        itemToBeRemoved,
-      ]);
     }
   };
 
