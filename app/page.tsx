@@ -123,7 +123,7 @@ export default function Home() {
       />
       <div className={styles.searchContainer}>
         {selectedItems.map((s, i) => (
-          <div key={i + "_selected"} className={styles.selectedItem} style={{border: s.highLighted ? '1px solid #3c006b': 'none'}}>
+          <div key={i + "_selected"} className={styles.selectedItem} style={{border: s.highLighted && i === selectedItems.length - 1 ? '1px solid #3c006b': 'none'}}>
             <Image src={s.icon} height={15} width={15} alt={s.name} />
             <span>{s.name}</span>
             <Image
