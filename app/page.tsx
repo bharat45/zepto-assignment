@@ -80,7 +80,10 @@ export default function Home() {
       ...i,
       highLighted: false,
     }));
-    items.push(item);
+    items.push({
+      ...item,
+      highLighted: false
+    });
     setSelectedItems(items);
     setSearch("");
   };
