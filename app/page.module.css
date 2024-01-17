@@ -42,8 +42,9 @@
 
 .inputContainer {
   position: relative;
-  width: 250px;
+  /* width: 250px; */
   margin-left: 10px;
+  flex-grow: 1;
 }
 
 .input {
@@ -59,7 +60,7 @@
 .suggestionsContainer {
   position: absolute;
   background-color: white;
-  width: 150%;
+  width: 400px;
   margin-top: 10px;
   border-radius: 5px;
 }

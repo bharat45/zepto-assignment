@@ -24,6 +24,7 @@ import styles from "./page.module.css";
 type groceryItem = {
   icon: any;
   name: string;
+  highLighted?: boolean
 };
 
 const groceryItems: groceryItem[] = [
@@ -69,7 +70,7 @@ export default function Home() {
       return;
     }
     const items = suggestions.filter(
-      (s) => !!s.name.startsWith(e.target.value)
+      (s) => !!s.name.toLowerCase().startsWith(e.target.value.toLowerCase())
     );
     setSuggestions(items);
   };
@@ -93,11 +94,23 @@ export default function Home() {
   }, [selectedItems]);
 
   const handleKeyDown = (e: any) => {
-    if (e.keyCode === 8 && search === '') {
-      const items = selectedItems.slice(0, selectedItems.length - 1);
-      setSelectedItems(items);
+    const itemToBeRemoved = selectedItems[selectedItems.length -1]
+    if (itemToBeRemoved.highLighted) {
+      if (e.keyCode === 8 && search === "") {
+        const items = selectedItems.slice(0, selectedItems.length - 1);
+        setSelectedItems(items);
+      }
+    } else if (e.keyCode === 8 && search === "") {
+      itemToBeRemoved.highLighted = true;
+      setSelectedItems(prev => [
+        ...prev.slice(0, selectedItems.length - 1),
+        itemToBeRemoved
+      ]);
     }
   };
+
+  const [focused, setFocused] = useState(false)
+  const onFocus = () => setFocused(true)
 
   return (
     <div className={styles.main}>
@@ -110,7 +123,7 @@ export default function Home() {
       />
       <div className={styles.searchContainer}>
         {selectedItems.map((s, i) => (
-          <div key={i + "_selected"} className={styles.selectedItem}>
+          <div key={i + "_selected"} className={styles.selectedItem} style={{border: s.highLighted ? '1px solid #3c006b': 'none'}}>
             <Image src={s.icon} height={15} width={15} alt={s.name} />
             <span>{s.name}</span>
             <Image
@@ -131,19 +144,22 @@ export default function Home() {
             onChange={handleChange}
             value={search}
             onKeyDown={handleKeyDown}
+            onFocus={onFocus}
           />
-          <div className={styles.suggestionsContainer}>
-            {suggestions.map((s, i) => (
-              <button
-                className={styles.suggestion}
-                key={i}
-                onClick={() => addItem(s)}
-              >
-                <Image src={s.icon} height={20} width={20} alt={s.name} />
-                <span>{s.name}</span>
-              </button>
-            ))}
-          </div>
+          {focused && (
+            <div className={styles.suggestionsContainer}>
+              {suggestions.map((s, i) => (
+                <button
+                  className={styles.suggestion}
+                  key={i}
+                  onClick={() => addItem(s)}
+                >
+                  <Image src={s.icon} height={20} width={20} alt={s.name} />
+                  <span>{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
