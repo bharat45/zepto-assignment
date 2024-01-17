@@ -24,7 +24,7 @@ import styles from "./page.module.css";
 type groceryItem = {
   icon: any;
   name: string;
-  highLighted?: boolean
+  highLighted?: boolean;
 };
 
 const groceryItems: groceryItem[] = [
@@ -76,12 +76,21 @@ export default function Home() {
   };
 
   const addItem = (item: groceryItem) => {
-    setSelectedItems((prev) => [...prev, item]);
+    let items: groceryItem[] = selectedItems.map((i) => ({
+      ...i,
+      highLighted: false,
+    }));
+    items.push(item);
+    setSelectedItems(items);
     setSearch("");
   };
 
   const removeItem = (item: groceryItem) => {
     let items = selectedItems.filter((i) => i.name !== item.name);
+    items = items.map((i) => ({
+      ...i,
+      highLighted: false,
+    }));
     setSelectedItems(items);
   };
 
@@ -94,7 +103,7 @@ export default function Home() {
   }, [selectedItems]);
 
   const handleKeyDown = (e: any) => {
-    const itemToBeRemoved = selectedItems[selectedItems.length -1]
+    const itemToBeRemoved = selectedItems[selectedItems.length - 1];
     if (itemToBeRemoved.highLighted) {
       if (e.keyCode === 8 && search === "") {
         const items = selectedItems.slice(0, selectedItems.length - 1);
@@ -102,15 +111,15 @@ export default function Home() {
       }
     } else if (e.keyCode === 8 && search === "") {
       itemToBeRemoved.highLighted = true;
-      setSelectedItems(prev => [
+      setSelectedItems((prev) => [
         ...prev.slice(0, selectedItems.length - 1),
-        itemToBeRemoved
+        itemToBeRemoved,
       ]);
     }
   };
 
-  const [focused, setFocused] = useState(false)
-  const onFocus = () => setFocused(true)
+  const [focused, setFocused] = useState(false);
+  const onFocus = () => setFocused(true);
 
   return (
     <div className={styles.main}>
@@ -123,7 +132,16 @@ export default function Home() {
       />
       <div className={styles.searchContainer}>
         {selectedItems.map((s, i) => (
-          <div key={i + "_selected"} className={styles.selectedItem} style={{border: s.highLighted && i === selectedItems.length - 1 ? '1px solid #3c006b': 'none'}}>
+          <div
+            key={i + "_selected"}
+            className={styles.selectedItem}
+            style={{
+              border:
+                s.highLighted && i === selectedItems.length - 1
+                  ? "1px solid #3c006b"
+                  : "none",
+            }}
+          >
             <Image src={s.icon} height={15} width={15} alt={s.name} />
             <span>{s.name}</span>
             <Image
